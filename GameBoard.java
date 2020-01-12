@@ -7,7 +7,7 @@ public class GameBoard {
     private int[][] board;
     private int[][] snakes;
     private int[][] ladders;
-    private HashMap<Player, Integer> currentPosition;
+    private ArrayList<Player> players;
 
     private void initializeBoard() {
         board = new int[SIZE][SIZE];
@@ -49,38 +49,32 @@ public class GameBoard {
     }
 
     public GameBoard(ArrayList<Player> players) {
-
-        currentPosition = new HashMap<>();
-
-        for(Player p: players){
-            currentPosition.put(p, 0);
-        }
-
+        this.players = players;
         initializeBoard();
     }
 
     public boolean play(Player player, int rollValue) {
-        int curPos = this.currentPosition.get(player);
+        int curPos = player.getPosition();
         curPos += rollValue;
         if(curPos >= 100) {
-            currentPosition.put(player, 100);
+            player.setPosition(100);
             return true;
         }
         for(int snake = 0;snake<SNAKES;snake++) {
             if(curPos == snakes[snake][0]){
                 System.out.println("Snake bit " + player.getName() + "!");
-                currentPosition.put(player, snakes[snake][1]);
+                player.setPosition(snakes[snake][1]);
                 return false;
             }
         }
         for(int ladder = 0;ladder<LADDERS;ladder++) {
             if(curPos == ladders[ladder][0]){
                 System.out.println(player.getName() + " climbed a ladder!");
-                currentPosition.put(player, ladders[ladder][1]);
+                player.setPosition(ladders[ladder][1]);
                 return false;
             }
         }
-        currentPosition.put(player, curPos);
+        player.setPosition(curPos);
         return false;
     }
 
@@ -92,8 +86,8 @@ public class GameBoard {
                 if(flag){
                     String row = "";
                     boolean empty = true;
-                    for(Player player: currentPosition.keySet()){
-                        if(board[i][SIZE-j-1] == currentPosition.get(player)){
+                    for(Player player: this.players){
+                        if(board[i][SIZE-j-1] == player.getPosition()){
                             empty = false;
                             row += player.getName().charAt(0) + " ";
                         }
@@ -104,8 +98,8 @@ public class GameBoard {
                 else {
                     boolean empty = true;
                     String row = "";
-                    for(Player player: currentPosition.keySet()) {
-                        if(board[i][j] == currentPosition.get(player)) {
+                    for(Player player: this.players) {
+                        if(board[i][j] == player.getPosition()) {
                             empty = false;
                             row += player.getName().charAt(0) + " ";
                         }
